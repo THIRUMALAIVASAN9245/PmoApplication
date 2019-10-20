@@ -1,0 +1,40 @@
+<div class="row align-center" style="padding-left: 15px;padding-bottom: 15px;">
+  <div class="column align-center text-center">
+    <h3 style="color: #623073;">Course Detail</h3>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col text-right pt-2 pb-2">
+    <button [routerLink]="['/course-detail/add']" class="btn btn-primary">Add Course</button>
+  </div>
+</div>
+
+<div class="table-responsive text-nowrap table-content">
+  <table class="table table-bordered table-hover table-striped">
+    <thead>
+      <tr style="background-color: #623073;color: #fff;">
+        <th class="text-center">Title</th>
+        <th class="text-center">Code</th>
+        <th>Url</th>
+        <th class="text-center">Description</th>
+        <th class="text-center">Document Type</th>
+        <th class="text-center">Course Type</th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let courseData of courseDetail; let i= index">
+        <td>{{courseData.title}}</td>
+        <td>CODE1</td>
+        <td>{{courseData.url}}</td>
+        <td>{{courseData.description}}</td>
+        <td>{{courseData.documentType}}</td>
+        <td>{{courseData.courseType}}</td>
+        <td>
+          <a (click)="downloadFile(associateplan.Proof,associateplan.KnowledgeTransferTitle)">Edit</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

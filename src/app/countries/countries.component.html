@@ -1,0 +1,6 @@
+<ul *ngIf="countryList.length>0; else loading">
+  <li *ngFor="let country of countryList">
+    {{ country.country_name }} - {{ country.code }}
+  </li>
+</ul>
+<ng-template #loading>No country found</ng-template>
