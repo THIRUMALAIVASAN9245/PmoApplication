@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {FormGroup, FormControl,Validators,FormBuilder  } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { ICourseDetail } from './model/courseDetail';
 import { CourseDetailService } from './service/courseDetail.service';
@@ -12,80 +12,73 @@ export class CourseDetailsComponent implements OnInit {
   courseId: string;
   mode: string;
   courseDetail: ICourseDetail;
-  courseForm:FormGroup;
-  title: FormControl;
-  url: FormControl;
-  description: FormControl;
-  docType: FormControl;
-  courseName: FormControl;
+  courseForm: FormGroup;
+  submitted = false;
 
-  courseType:Array<string>=['RLG','common','Technology','UI'];
-  documentType:Array<string>=['txt','pdf','xml','json'];
+  courseType: Array<string> = ['RLG', 'common', 'Technology', 'UI'];
+  documentType: Array<string> = ['txt', 'pdf', 'xml', 'json'];
 
-  constructor(private courseDetailService: CourseDetailService,
-        private route: ActivatedRoute, private router: Router,
-        private fb: FormBuilder ) { }
+  constructor(private route: ActivatedRoute,
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private courseDetailService: CourseDetailService) { }
 
   ngOnInit() {
-      this.createFormControls();
-      this.createForm();
-      this.route.params.subscribe(params => { this.courseId = params["id"] });
-        if (this.courseId == "0" && this.courseId != undefined) {
-            this.mode = "Add";
-        }
-        else {
-            this.courseDetailService.getCourse(this.courseId)
-                .subscribe(model => {
-                    this.courseDetail = model;
-                    this.mode = "Update";
-                    this.bindData();
-                });
-
-        }
-  }
-  
-  createFormControls() {
-    this.title = new FormControl('', Validators.required);
-    this.url = new FormControl('', Validators.required);
-    this.description = new FormControl('');
-    this.docType = new FormControl('',Validators.required);
-    this.courseName = new FormControl('',Validators.required);
+    this.createForm();
+    this.route.params.subscribe(params => { this.courseId = params["id"] });
+    if (this.courseId != "" && this.courseId != undefined && this.courseId != null) {
+      this.courseDetailService.getCourse(this.courseId)
+        .subscribe(model => {
+          this.courseDetail = model;
+          this.mode = "Update";
+          this.bindData();
+        });
+    }
+    else {
+      this.mode = "Add";
+    }
   }
 
   createForm() {
-    this.courseForm = new FormGroup({
-      title: this.title,
-      url: this.url,
-      description: this.description,
-      courseName: this.courseName,
-      docType:this.docType
+    this.courseForm = this.formBuilder.group({
+      title: ['', [Validators.required]],
+      url: ['', [Validators.required]],
+      description: ['', [Validators.required]],
+      docType: ['', [Validators.required]],
+      courseName: ['', [Validators.required]]
     });
   }
 
+  get f() { return this.courseForm.controls; }
+
   private bindData() {
     const result = Object.assign({}, this.courseDetail);
-        this.courseForm.setValue({
-            title: result.title,
-            url: result.url,
-            description: result.description,
-            docType: result.documentType,
-            courseName: result.courseType
-        });
+    this.courseForm.setValue({
+      title: result.title,
+      url: result.url,
+      description: result.description,
+      docType: result.documentType,
+      courseName: result.courseType
+    });
   }
 
   onSubmit(formData: any) {
-        if (this.mode == "Update") {
-            this.courseDetailService.put(formData)
-                .subscribe(model => {
-                    alert("Course Details Updated Successfully.");
-                });
-        }
-        else {
-            this.courseDetailService.post(formData)
-                .subscribe(model => {
-                    alert("Course Details Added Successfully.");
-                });
-        }
+    this.submitted = true;
+    if (this.courseForm.invalid) {
+      return;
     }
 
+    if (this.mode == "Update") {
+      this.courseDetailService.put(formData)
+        .subscribe(model => {
+          alert("Course Details Updated Successfully.");
+        });
+    }
+    else {
+      this.courseDetailService.post(formData)
+        .subscribe(model => {
+          alert("Course Details Added Successfully.");
+        });
+    }
+  }
 }

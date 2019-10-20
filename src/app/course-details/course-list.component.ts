@@ -20,7 +20,8 @@ export class CourseListComponent implements OnInit {
 
     private getCourseListDetails() {
         this.courseDetailService.getCourses(this.id).subscribe(model => {
-            this.courseDetail = model
+          debugger;
+          this.courseDetail = model
         });
    }
 }
