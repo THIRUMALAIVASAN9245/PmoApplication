@@ -1,20 +1,44 @@
 import { Injectable } from '@angular/core';
-import { ICourseDetail } from '../model/courseDetail';
+import { ICourseDetail, CourseDetail } from '../model/courseDetail';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { of } from 'rxjs/observable/of';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class CourseDetailService {
 
     private baseUrl: string;
 
-    constructor(private http: HttpClient) {
+    constructor(private httpClient: HttpClient) {
         this.baseUrl = "CourseDetails";
     }
 
     getCourses(courseId?: string): Observable<ICourseDetail[]> {
-        return of(this.getResonse());
+        let httpHeaders = new HttpHeaders({
+            'Content-Type': 'application/json;charset=UTF-8;odata=verbose',
+            'Cache-Control': 'no-cache',
+            'accept': 'application/json;odata=verbose'
+        });
+        let options = {
+            headers: httpHeaders
+        };
+        var apiURL = "https://cognizantonline.sharepoint.com/sites/TestWeb/_api/lists/getbytitle('EmployeeList')/items";
+        return this.httpClient.get(apiURL, options)
+            .pipe(map((resspone: any) => {
+                debugger;
+                return resspone.d.results.map(item => {
+                    return new CourseDetail(
+                        item.GUID,
+                        item.Title,
+                        item.UserName,
+                        null,
+                        null,
+                        null
+                    );
+                });
+            }));
+        // return of(this.getResonse());
     }
 
     getCourse(courseId?: string): Observable<ICourseDetail> {
